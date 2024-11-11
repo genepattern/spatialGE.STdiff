@@ -1,0 +1,31 @@
+[
+    {
+        "name": "Required",
+        "description": "Essential parameters for running the analysis.",
+        "hidden": false,
+        "parameters": [
+            "x"
+        ]
+    },
+    {
+        "name": "Optional Analysis Parameters",
+        "description": "Parameters that modify the analysis behavior.",
+        "hidden": false,
+        "parameters": [
+            "samples",
+            "annot",
+            "w",
+            "k",
+            "deepSplit",
+            "topgenes",
+            "pval_thr",
+            "pval_adj",
+            "sp_topgenes",
+            "clusters",
+            "pairwise",
+            "verbose",
+            "cores",
+            "plot"
+        ]
+    }
+]
