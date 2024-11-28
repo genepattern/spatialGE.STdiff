@@ -11,7 +11,7 @@ option_list <- list(
               help="STlist object containing spatial transcriptomics data", metavar="character"),
   make_option(c("-s", "--samples"), type="character", default=NULL,
               help="Comma-separated list of sample indices or names to include in DE tests", metavar="character"),
-  make_option(c("-a", "--annot"), type="character", default=NULL,
+  make_option(c("-a", "--annot"), type="character", default="default",
               help="Column name in x@spatial_meta containing groups/clusters to be tested", metavar="character"),
   make_option(c("-w", "--w"), type="numeric", default=NULL,
               help="Spatial weight used in STclust. Required if annot is empty", metavar="numeric"),
@@ -27,7 +27,7 @@ option_list <- list(
               help="Method to adjust p-values. Defaults to 'FDR'", metavar="character"),
   make_option(c("-g", "--sp_topgenes"), type="numeric", default=0.2,
               help="Proportion of DE genes from non-spatial models to use in spatial models", metavar="numeric"),
-  make_option(c("-c", "--clusters"), type="character", default=NULL,
+  make_option(c("-c", "--clusters"), type="character", default=" ",
               help="Comma-separated list of cluster names to test DE genes", metavar="character"),
   make_option(c("-r", "--pairwise"), type="logical", default=FALSE,
               help="Whether to carry tests on a pairwise manner", metavar="logical"),
@@ -50,6 +50,18 @@ if (!is.null(opt$clusters)) {
   opt$clusters <- unlist(strsplit(opt$clusters, ","))
 }
 
+annot <- opt$annot
+clusters <- opt$clusters
+cores <- opt$cores
+
+if(annot == "default"){
+  annot <- NULL
+}
+
+if(length(clusters) == 0){
+  clusters <- NULL
+}
+
 # Load the STlist object
 # Assuming the STlist object is saved in an RData file
 data <- readRDS(opt$x)
@@ -58,7 +70,7 @@ data <- readRDS(opt$x)
 result <- STdiff(
   x = data,
   samples = opt$samples,
-  annot = opt$annot,
+  annot = annot,
   w = opt$w,
   k = opt$k,
   deepSplit = opt$deepSplit,
@@ -66,7 +78,7 @@ result <- STdiff(
   pval_thr = opt$pval_thr,
   pval_adj = opt$pval_adj,
   sp_topgenes = opt$sp_topgenes,
-  clusters = opt$clusters,
+  clusters = clusters,
   pairwise = opt$pairwise,
   verbose = opt$verbose,
   cores = opt$cores
@@ -82,7 +94,7 @@ if (opt$plot) {
     labs(title="Number of Differentially Expressed Genes per Sample", x="Sample", y="DE Genes")
 }
 
-save(result, file="/STdiff_results.RData")
+saveRDS(result, file="STdiff_results.rds")
 
 ### R Command Line to Run the Wrapper Script
 # Rscript STdiff_wrapper.R --x "path/to/STlist.RData" --samples "1,2,3" --annot "cluster_column" --topgenes 5000 --pval_thr 0.05 --pval_adj "fdr" --sp_topgenes 0.2 --verbose 1 --plot TRUE
