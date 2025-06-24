@@ -67,22 +67,29 @@ if(length(clusters) == 0){
 
 data <- readRDS(opt$x)
 
-result <- STdiff(
+args <- list(
   x = data,
   samples = opt$samples,
-  annot = annot,
-  w = opt$w,
-  k = opt$k,
-  deepSplit = opt$deepSplit,
   topgenes = opt$topgenes,
   pval_thr = opt$pval_thr,
   pval_adj = opt$pval_adj,
   sp_topgenes = opt$sp_topgenes,
-  clusters = opt$clusters,
   pairwise = opt$pairwise,
   verbose = opt$verbose,
   cores = opt$cores
 )
+
+# Add conditionally
+if (!is.null(annot) && annot != "") {
+  args$annot <- annot
+} else {
+  if (!is.null(opt$w)) args$w <- opt$w
+  if (!is.null(opt$k)) args$k <- opt$k
+  if (!is.null(opt$deepSplit)) args$deepSplit <- opt$deepSplit
+}
+if (!is.null(opt$clusters)) args$clusters <- opt$clusters
+
+result <- do.call(STdiff, args)
 
 if (opt$plot) {
   de_counts <- sapply(result, nrow)
