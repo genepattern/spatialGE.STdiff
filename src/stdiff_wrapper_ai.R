@@ -57,7 +57,7 @@ annot <- opt$annot
 clusters <- opt$clusters
 cores <- opt$cores
 
-if(annot == ""){
+if(is.character(annot) && annot == ""){
   annot <- NULL
 }
 
